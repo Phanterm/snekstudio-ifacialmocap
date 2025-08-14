@@ -1,4 +1,4 @@
-extends Node3D
+extends Mod_Base
 class_name Mod_IFacialMocapController
 
 #### iFacialMocap Developer Page:https://www.ifacialmocap.com/for-developer/ 
@@ -236,14 +236,15 @@ func thread_method():
 func get_message_string() -> String:
 	return message_string
 
-func visibility_changed():
-	if visible:
-		#TODO: try/catch
-		start_function()
-
-	else:
-		#TODO: try/catch
-		on_application_quit()
+#TODO: Need different trigger for this since Nodes don't have visibility. Unity script called this with OnEnable/OnDisabled
+#func visibility_changed():
+	#if visible:
+		##TODO: try/catch
+		#start_function()
+#
+	#else:
+		##TODO: try/catch
+		#on_application_quit()
 
 func on_application_quit():
 	#TODO: try/catch
