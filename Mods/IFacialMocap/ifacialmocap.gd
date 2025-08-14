@@ -128,7 +128,6 @@ func set_animation_inside_godot_settings() -> void:
 
 		#blendShapes
 		for message in str_array_a[0].split('|') as String:
-
 			var str_array_b : Array[String] = ["", "", ""]
 			if message.contains("&"):
 				str_array_b = message.split('&')
@@ -144,76 +143,66 @@ func set_animation_inside_godot_settings() -> void:
 				var comma_list : Array[String] = str_array_b[1].split(',')
 				if str_array_b[0] == "head":
 					for head_object in head_object_array:
-						#TODO: CultureInfo. Need trycatch using "is_valid_float()" on these for better safety.
+						#TODO: Quaternions spooky, check if I'm doing these correctly
+						#TODO: Need trycatch using "is_valid_float()" on these for better safety.
 						var new_rot : Vector3 = Vector3(comma_list[0].to_float(), -comma_list[1].to_float(), -comma_list[2].to_float())
+						#NOTE: I have no idea if this is correct.
+						head_object.transform.basis = Quaternion.from_euler(new_rot)
 
-						head_object.transform.basis = quaternion.from_euler(new_rot)
-						pass
 					for head_position_object in head_position_object_array:
-						#TODO: CultureInfo
-						#head_position_object.position = new Vector3(-float.Parse(comma_list[3], CultureInfo.InvariantCulture), float.Parse(comma_list[4], CultureInfo.InvariantCulture), float.Parse(comma_list[5], CultureInfo.InvariantCulture));
-						pass
+						head_position_object.position = Vector3(-comma_list[3].to_float(), comma_list[4].to_float(), comma_list[5].to_float())
+
 				elif str_array_b[0] == "rightEye":
 					for right_eye_object in right_eye_object_array:
-						#TODO: CultureInfo
-						#right_eye_object.rotation = Quaternion.Euler(float.Parse(comma_list[0], CultureInfo.InvariantCulture), -float.Parse(comma_list[1], CultureInfo.InvariantCulture), float.Parse(comma_list[2], CultureInfo.InvariantCulture));
-						pass
+						var new_rot : Vector3 = Vector3(comma_list[0].to_float(), -comma_list[1].to_float(), comma_list[2].to_float())
+						right_eye_object.transform.basis = Quaternion.from_euler(new_rot)
+
 				elif str_array_b[0] == "leftEye":
 					for left_eye_object in left_eye_object_array:
-						#TODO: CultureInfo
-						#left_eye_object.rotation = Quaternion.Euler(float.Parse(comma_list[0], CultureInfo.InvariantCulture), -float.Parse(comma_list[1], CultureInfo.InvariantCulture), float.Parse(comma_list[2], CultureInfo.InvariantCulture));
-						pass
+						var new_rot : Vector3 = Vector3(comma_list[0].to_float(), -comma_list[1].to_float(), comma_list[2].to_float())
+						left_eye_object.transform.basis = Quaternion.from_euler(new_rot)
 
 #TODO: Need that static class FM3D_and_iFacialMocap_GetAllChildren for this..
 func find_nodes_inside_godot_settings():
-	pass
-#{
 	#Find BlendShape Objects
-	#mesh_target_list = Array[MeshInstance3D].new()
-#
-	#face_obj_grp : Node3D = GameObject.Find(face_object_group_name);
-	#if (faceObjGrp != null)
-	#{
-		#List<GameObject> list = FM3D_and_iFacialMocap_GetAllChildren.GetAll(faceObjGrp);
-#
-		#foreach (GameObject obj in list)
-		#{
-			#mesh_target = obj.GetComponent<MeshInstance3D>();
-			#if (mesh_target != null)
-			#{
-				#if (has_blend_shapes(mesh_target) == true)
-				#{
-					#mesh_target_list.Add(mesh_target);
-				#}
-			#}
-		#}
-	#}
-#
+	mesh_target_list = Array[MeshInstance3D].new()
+
+	var face_obj_grp : Node3D = get_tree().find_child(face_object_group_name, true)
+	if face_obj_grp != null:
+		#TODO: Convert
+		var list : Array[Node3D] = get_all(face_obj_grp)
+
+		for obj in list:
+			if obj is MeshInstance3D:
+				mesh_target = obj
+			if mesh_target != null:
+				if has_blend_shapes(mesh_target):
+					mesh_target_list.append(mesh_target);
+
 		#Find Bone Objects
-		#var head_object_array : Array[Node3D] 
-		#for head_string in head_bone_name.split(','):
-		#{
-			#head_object : Node3D = GameObject.Find(head_string)
-			#if head_object != null:
-				#head_object_array.append(head_object)
+		var head_object_array : Array[Node3D] 
+		for head_string in head_bone_name.split(','):
+			var head_object : Node3D = get_tree().find_child(head_string, true)
+			if head_object != null:
+				head_object_array.append(head_object)
 
-		#var right_eye_object_array : Array[Node3D]
-		#for right_eye_string in right_eye_bone_name.split(','):
-			#var right_eye_object : Node3D = GameObject.Find(right_eye_string)
-			#if right_eye_object != null:
-				#right_eye_object_array.append(right_eye_object)
+		var right_eye_object_array : Array[Node3D]
+		for right_eye_string in right_eye_bone_name.split(','):
+			var right_eye_object : Node3D = get_tree().find_child(right_eye_string, true)
+			if right_eye_object != null:
+				right_eye_object_array.append(right_eye_object)
 
-		#var left_eye_object_array : Array[Node3D]
-		#for left_eye_string in left_eye_bone_name.split(','):
-			#var left_eye_object : Node3D = GameObject.Find(left_eye_string)
-			#if left_eye_object != null:
-				#left_eye_object_array.append(left_eye_object)
+		var left_eye_object_array : Array[Node3D]
+		for left_eye_string in left_eye_bone_name.split(','):
+			var left_eye_object : Node3D = get_tree().find_child(left_eye_string, true)
+			if left_eye_object != null:
+				left_eye_object_array.append(left_eye_object)
 
-		#var head_position_object_array : Array[Node3D]
-		#for head_position_string in head_position_object_name.split(','):
-			#var head_position_object : Node3D = GameObject.Find(head_position_string)
-			#if head_position_object != null:
-				#head_position_object_array.append(head_position_object)
+		var head_position_object_array : Array[Node3D]
+		for head_position_string in head_position_object_name.split(','):
+			var head_position_object : Node3D = get_tree().find_child(head_position_string, true)
+			if head_position_object != null:
+				head_position_object_array.append(head_position_object)
 
 func thread_method():
 		#Process once every 5ms
@@ -266,7 +255,6 @@ func stop_udp():
 	if game_start_with_connect == true:
 		stop_streaming_ios_app()
 	udp.free()
-	#TODO: Ensure this works as a reliable way to abort the thread? 
 	thread.wait_to_finish()
 
 func has_blend_shapes(skin : MeshInstance3D) -> bool:
@@ -278,22 +266,23 @@ func has_blend_shapes(skin : MeshInstance3D) -> bool:
 
 	return true
 
-#NOTE: ugh I don't know hoe to deal with this. Should it be a new script entirely?
+#NOTE: ugh I don't know hoe to deal with these. I've separated the one static class into three static functions.
 static func FM3D_and_iFacialMocap_GetAllChildren():
 	pass
-#{
-	#public static List<GameObject> GetAll(this GameObject obj)
-	#{
-		#List<GameObject> allChildren = new List<GameObject>();
-		#allChildren.Add(obj);
-		#GetChildren(obj, ref allChildren);
-		#return allChildren;
-	#}
+	
+
+static func get_all(obj : Node3D) -> Array[Node3D]:
+	return [null]
+	#List<GameObject> allChildren = new List<GameObject>();
+	#allChildren.Add(obj);
+	#GetChildren(obj, ref allChildren);
+	#return allChildren;
+#}
 #NOTE: The original script references 'ref' for all_children.
-static func GetChildren(obj : Node3D, all_children : Array[Node3D]):
+static func get_obj_children(obj : Node3D, all_children : Array[Node3D]):
 	pass
-#{
-	#Transform children = obj.GetComponentInChildren<Transform>();
+#{	
+	#children = obj.GetComponentInChildren<Transform>();
 	#if (children.childCount == 0)
 	#{
 		#return;
